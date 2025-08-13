@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import Integer, Boolean, String, ForeignKey
+from sqlalchemy import Integer, Date, String, UniqueConstraint, ForeignKey
 from app.db.base import Base
 
 class Offer(Base):

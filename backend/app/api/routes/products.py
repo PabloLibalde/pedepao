@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.db.models.product import Product
@@ -13,5 +14,11 @@ def list_products(db: Session = Depends(get_db)):
 @router.post("", response_model=ProductRead, status_code=201)
 def create_product(data: ProductCreate, db: Session = Depends(get_db)):
     p = Product(**data.model_dump())
-    db.add(p); db.commit(); db.refresh(p)
+    db.add(p)
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Produto já existe")
+    db.refresh(p)
     return p

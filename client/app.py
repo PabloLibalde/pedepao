@@ -75,7 +75,7 @@ class MainWindow(QWidget):
                 raise Exception("Oferta não encontrada")
             prod_id = selected["product_id"]
             # user_id fixo apenas para demo. Integre com login conforme necessário.
-            resp = self.api.create_order(user_id="demo-user", product_id=prod_id)
+            resp = self.api.create_order_by_offer(user_id="demo-user", offer_id=offer_id)
             QMessageBox.information(self, "Sucesso", f"Pedido criado: {resp}")
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Falha ao criar pedido: {e}")
