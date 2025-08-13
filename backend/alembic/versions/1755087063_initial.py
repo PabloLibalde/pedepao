@@ -14,9 +14,9 @@ def upgrade() -> None:
         sa.Column("is_active", sa.Boolean, nullable=False, server_default=sa.text("true")),
     )
     op.create_table(
-        "windows",
+        "offers",
         sa.Column("id", sa.Integer, primary_key=True),
-        sa.Column("name", sa.String(length=80), nullable=False, unique=True),
+        sa.Column("product_id", sa.Integer, nullable=False),
         sa.Column("cutoff_time", sa.String(length=8), nullable=False, server_default="13:00"),
         sa.Column("is_active", sa.Boolean, nullable=False, server_default=sa.text("true")),
     )
@@ -30,5 +30,8 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.drop_table("orders")
-    op.drop_table("windows")
+    op.drop_table("offers")
     op.drop_table("products")
+
+    # índices para offers
+    # (se preferir, mova para upgrade() antes de outras tabelas)

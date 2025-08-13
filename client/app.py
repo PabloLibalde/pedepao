@@ -17,7 +17,7 @@ class MainWindow(QWidget):
         self.setWindowTitle("PedePao")
         self.layout = QVBoxLayout(self)
 
-        self.info = QLabel("Selecione um produto e envie seu pedido (1 por dia).")
+        self.info = QLabel("Selecione uma oferta e envie seu pedido (1 por dia).")
         self.timer_label = QLabel("")
         self.listw = QListWidget()
         self.btn = QPushButton("Enviar pedido")
@@ -28,17 +28,17 @@ class MainWindow(QWidget):
         self.layout.addWidget(self.listw)
         self.layout.addWidget(self.btn)
 
-        self.load_products()
+        self.load_offers()
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_cutoff_state)
         self.timer.start(1000)
         self.update_cutoff_state()
 
-    def load_products(self):
+    def load_offers(self):
         try:
-            for p in self.api.list_products():
-                if p["is_active"]:
-                    self.listw.addItem(f'{p["id"]} - {p["name"]}')
+            for o in self.api.list_offers():
+                if o["is_active"]:
+                    self.listw.addItem(f'{o["id"]} - {o["product_name"]}')
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Falha ao carregar produtos: {e}")
 
@@ -64,10 +64,16 @@ class MainWindow(QWidget):
             return
         item = self.listw.currentItem()
         if not item:
-            QMessageBox.information(self, "Info", "Selecione um produto.")
+            QMessageBox.information(self, "Info", "Selecione uma oferta.")
             return
-        prod_id = int(item.text().split(" - ")[0])
+        offer_id = int(item.text().split(" - ")[0])
         try:
+            # Encontrar a oferta selecionada para obter o product_id
+            offers = self.api.list_offers()
+            selected = next((o for o in offers if o["id"] == offer_id), None)
+            if not selected:
+                raise Exception("Oferta não encontrada")
+            prod_id = selected["product_id"]
             # user_id fixo apenas para demo. Integre com login conforme necessário.
             resp = self.api.create_order(user_id="demo-user", product_id=prod_id)
             QMessageBox.information(self, "Sucesso", f"Pedido criado: {resp}")

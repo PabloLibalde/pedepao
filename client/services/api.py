@@ -14,3 +14,9 @@ class ApiClient:
         r = self._client.post(f"{self.base_url}/orders", json={"user_id": user_id, "product_id": product_id})
         r.raise_for_status()
         return r.json()
+
+
+    def list_offers(self):
+        r = self._client.get(f"{self.base_url}/offers")
+        r.raise_for_status()
+        return r.json()

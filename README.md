@@ -26,3 +26,5 @@ python -m venv .venv && . .venv/bin/activate  # (Linux/Mac)
 pip install -r client/requirements.txt
 python client/app.py
 ```
+
+**Terminologia:** Produtos = itens do catálogo; Ofertas = o que está liberado para seleção pelos usuários.

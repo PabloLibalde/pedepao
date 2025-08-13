@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-export PYTHONPATH=/app
 set -e
 # aplica migrações
 alembic upgrade head || true
