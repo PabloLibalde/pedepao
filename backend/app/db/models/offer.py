@@ -10,6 +10,5 @@ class Offer(Base):
     product_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("products.id"), index=True, nullable=False
     )
-    # "HH:MM" (string curta); regra de negócio pode sobrepor o cutoff padrão
     cutoff_time: Mapped[str] = mapped_column(String(8), default="13:00", nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)

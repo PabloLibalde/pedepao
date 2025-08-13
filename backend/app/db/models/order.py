@@ -13,5 +13,5 @@ class Order(Base):
     product_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("products.id"), index=True, nullable=False
     )
-    # IMPORTANTE no SQLAlchemy 2.x: anotação usa o tipo Python (date), não o tipo SA
+    # tipo Python na anotação, tipo SA no mapped_column
     order_date: Mapped[date] = mapped_column(Date, index=True, nullable=False)
