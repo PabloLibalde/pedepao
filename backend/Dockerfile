@@ -1,6 +1,7 @@
 FROM python:3.13-slim AS base
 WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
