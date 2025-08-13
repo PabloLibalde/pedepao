@@ -1,37 +1,28 @@
-# PedePao
+# PedePao (versão refatorada)
 
-MVP de uma aplicação de pedidos de lanches para funcionários.
+Projeto exemplo com melhorias:
+- Backend FastAPI + SQLAlchemy 2.x + Alembic
+- Regras: **1 pedido por usuário/dia**; cutoff configurável (padrão 13:00 America/Sao_Paulo)
+- Cliente desktop **PySide6** com bloqueio pós-cutoff
+- Docker/Compose (PostgreSQL + API)
+- CI (GitHub Actions), lint (ruff), type-check (mypy) e pre-commit
 
-## Componentes
-- **backend/**: API FastAPI + PostgreSQL (SQLAlchemy 2.x, Alembic).
-- **client/**: Aplicativo desktop (Windows/macOS/Linux) com PySide6.
-- **Docker**: `docker-compose.yml` para subir Postgres e API.
+## Python
+Validado com **Python 3.13.6**.
 
-## Requisitos
-- Python 3.13.6
-- Docker / Docker Compose (para backend)
-- Windows 10/11 (cliente; usa `pywin32` opcionalmente)
-
-## Passos rápidos
-
-### Backend
+## Como subir
 ```bash
-cd backend
+cp .env.example .env
 docker compose up -d --build
-# Criar tabelas
-docker compose exec api bash -lc "alembic upgrade head"
+# A API sobe em http://localhost:8000
+# Swagger: http://localhost:8000/docs
 ```
 
-### Cliente (Windows)
+## Cliente (PySide6)
+Com Python 3.13.6:
 ```bash
-cd client/app
-python -m venv .venv
-.venv\Scripts\pip install -r requirements.txt pyinstaller
-# Ajuste o api_base no config.json
-.venv\Scripts\pyinstaller --noconsole --name PedePao main.py
-# Executável em dist\PedePao\PedePao.exe
+python -m venv .venv && . .venv/bin/activate  # (Linux/Mac)
+# Windows: .venv\Scripts\activate
+pip install -r client/requirements.txt
+python client/app.py
 ```
-
-## Notas
-- Todos horários salvos em UTC; a lógica de corte (cutoff) usa TZ `America/Sao_Paulo`.
-- Um pedido por usuário por dia. Admin gerencia ofertas e janelas (períodos) e define `cutoff` (padrão 13:00).

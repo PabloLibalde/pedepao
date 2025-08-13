@@ -1,13 +1,15 @@
-FROM python:3.13-slim
+FROM python:3.13-slim AS base
 WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -U pip && pip install --no-cache-dir -r requirements.txt
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
 COPY app ./app
-COPY alembic.ini ./alembic.ini
 COPY alembic ./alembic
-COPY entrypoint.sh ./entrypoint.sh
+COPY alembic.ini ./alembic.ini
+COPY entrypoint.sh ./
 RUN chmod +x /app/entrypoint.sh
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONPATH=/app
+
 EXPOSE 8000
-ENTRYPOINT ["/app/entrypoint.sh"]
+HEALTHCHECK --interval=30s --timeout=3s --retries=10 CMD curl -f http://localhost:8000/health || exit 1
+CMD ["/app/entrypoint.sh"]

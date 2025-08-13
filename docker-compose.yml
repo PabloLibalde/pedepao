@@ -1,0 +1,34 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: pedepao
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d pedepao"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file: ./.env
+    environment:
+      PEDEPAO_DATABASE_URL: ${PEDEPAO_DATABASE_URL}
+      PEDEPAO_TZ: ${PEDEPAO_TZ}
+      PEDEPAO_CUTOFF_DEFAULT: ${PEDEPAO_CUTOFF_DEFAULT}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+
+volumes:
+  pgdata:
