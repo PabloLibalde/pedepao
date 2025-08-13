@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
-from sqlalchemy import select, func
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import func
 
 from app.db.session import get_db
 from app.db.models.product import Product
@@ -22,6 +23,7 @@ def list_products(
 ):
     stmt = select(Product)
     if q:
+        # case-insensitive; NÃO remove acento
         stmt = stmt.where(func.unaccent(Product.name).ilike(func.unaccent(f"%{q}%")))
     if active is not None:
         stmt = stmt.where(Product.is_active == active)
@@ -46,7 +48,6 @@ def create_product(data: ProductCreate, db: Session = Depends(get_db)):
         db.commit()
     except IntegrityError:
         db.rollback()
-        # name unique no nível de negócio
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Produto já existe")
     db.refresh(obj)
     return obj
@@ -68,7 +69,6 @@ def update_product(product_id: int, data: ProductUpdate, db: Session = Depends(g
         db.commit()
     except IntegrityError:
         db.rollback()
-        # nome duplicado
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Nome de produto já em uso")
     db.refresh(obj)
     return obj
@@ -85,7 +85,6 @@ def delete_product(product_id: int, db: Session = Depends(get_db)):
         db.commit()
     except IntegrityError:
         db.rollback()
-        # há FKs (offers, orders) com ondelete RESTRICT → retorna 409
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Não é possível excluir: produto referenciado por ofertas/pedidos",
